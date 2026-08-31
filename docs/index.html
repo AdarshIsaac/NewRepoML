@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visible Pages, Weak CTR: A Decision-Support Model for Refresh Review</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --text: #1d2433;
+      --muted: #576071;
+      --line: #dfe6f1;
+      --accent: #204ecf;
+      --shadow: 0 12px 28px rgba(26, 41, 69, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
+    .hero { background: linear-gradient(135deg, #eef4ff 0%, #f9fbff 100%); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 36px 28px; margin-bottom: 28px; }
+    h1, h2, h3 { margin-top: 0; }
+    h1 { font-size: clamp(2rem, 2.5vw, 3rem); margin-bottom: 12px; }
+    .subtitle { color: var(--muted); font-size: 1.02rem; margin-bottom: 0; }
+    .meta { color: var(--muted); font-size: 0.95rem; margin-top: 14px; }
+    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px 22px; margin-bottom: 22px; box-shadow: var(--shadow); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+    .kpi { border: 1px solid var(--line); background: #f9fbff; border-radius: 12px; padding: 16px; }
+    .kpi .label { color: var(--muted); font-size: 0.8rem; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi .value { font-size: 2rem; font-weight: 700; margin-top: 8px; color: var(--text); }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #f3f7ff; }
+    .note { background: #f9fafc; border-left: 4px solid var(--accent); padding: 12px 14px; color: var(--text); border-radius: 8px; }
+    a { color: var(--accent); }
+    ul, ol { padding-left: 20px; }
+    @media (max-width: 640px) { .wrap { padding: 18px 14px 60px; } .hero, .section { padding: 20px 16px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>Visible Pages, Weak CTR: A Decision-Support Model for Refresh Review</h1>
+      <p class="subtitle">A public-safe ranking model for identifying pages that have demand but are under-converting in search results.</p>
+      <p class="meta">Lane: Ranking Signal Analysis · Built on the FlyRank ML Internship dataset</p>
+    </header>
+
+    <section class="section">
+      <h2>Abstract</h2>
+      <p>We asked whether a simple, public-safe ranking model could surface pages with measurable search visibility but weak click-through performance, so editors could prioritize review. Using the anonymized content refresh dataset, we built a page-level model on pre-decision signals that are available before a review action. The model materially outperformed a transparent rule baseline on the same holdout split, lifting precision at the top of the queue from roughly 0.24 to 0.74. This result suggests that visible but low-CTR pages are a meaningful review opportunity, especially when paired with editorial judgment. The output is best read as decision support for prioritization, not a causal claim about search outcomes or platform behavior.</p>
+    </section>
+
+    <section class="section">
+      <h2>Introduction / Problem statement</h2>
+      <p>Review teams rarely have time to inspect every page. The practical decision is not whether a page is “good” in the abstract, but which pages most deserve a human check given the signals already available before the review moment. In this project, the decision unit is a content page, and the ranking output is a reviewer queue ordered by opportunity.</p>
+      <p>The core question is straightforward: among pages that already receive search impressions, which ones show enough demand to justify a review of title, snippet, or content freshness? The model is designed to help an editor answer that question earlier and more consistently than a manual scan.</p>
+      <p class="note">This work stays within public-safe decision-support language. It does not claim to predict Google’s algorithm or to prove a causal effect of any content change.</p>
+    </section>
+
+    <section class="section">
+      <h2>Data</h2>
+      <p>We used the anonymized starter dataset in the repository: a page-level content refresh sample with roughly 30,000 rows. The label is the observed decline signal from the dataset, and the feature set is limited to safe signals measured before the review point: impressions, clicks, sessions, average position, content age, and engagement-related measures. We excluded direct identifiers, URL text, client names, and raw query data, because they do not belong in a public research artifact and they would create unnecessary leakage risk.</p>
+      <div class="grid">
+        <div class="kpi"><span class="label">Rows</span><span class="value">30,000</span></div>
+        <div class="kpi"><span class="label">Declining Label Rate</span><span class="value">54.2%</span></div>
+        <div class="kpi"><span class="label">Split</span><span class="value">Client holdout</span></div>
+      </div>
+      <p>We deliberately excluded label-derived fields and pseudonymous IDs from the feature vector beyond grouping for validation. The project’s public-facing outputs therefore use only signals that are explainable, reviewable, and safe to share.</p>
+    </section>
+
+    <section class="section">
+      <h2>Methodology</h2>
+      <p>The modeling task is a page-level ranking problem. The target is a binary decline label, defined from the observed page trend in the dataset. The baseline is a transparent rule: rank pages highest when they have sufficient demand, appear in a usable search position, and have unusually low CTR relative to similar pages.</p>
+      <p>We compared that baseline against a supervised model using safe pre-decision features. A client holdout split keeps pages from the same client in the same partition, which is more honest than a random row-level split for a page review workflow. We also checked for leakage by confirming that label-derived fields and the outcome trend variables were not used as predictors.</p>
+      <p><strong>Safety guardrails:</strong></p>
+      <ul>
+        <li>No client-identifying details in the public report or repo artifacts.</li>
+        <li>No raw search queries or private data exports.</li>
+        <li>No causal claim that a model score causes rank changes or business impact.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Results</h2>
+      <p>The model produced a clear lift over the baseline on the same split.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>ROC AUC</th>
+            <th>Avg Precision</th>
+            <th>Precision@50</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Baseline rule</td>
+            <td>0.627</td>
+            <td>0.468</td>
+            <td>0.240</td>
+          </tr>
+          <tr>
+            <td>Random forest</td>
+            <td>0.750</td>
+            <td>0.618</td>
+            <td>0.740</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">The headline takeaway is the lift in top-ranked review quality: roughly 0.24 to 0.74 precision at the top 50 items, which is a substantial improvement over a readable rule baseline.</p>
+      <p>In plain terms, the model is strongest when demand is already visible and the page is under-converting relative to that demand. That is a useful signal for editors because the action is narrow, reviewable, and explainable.</p>
+    </section>
+
+    <section class="section">
+      <h2>Limitations & honest framing</h2>
+      <p>This is a directional ranking tool, not a causal or platform-level prediction engine. We can say that visibility and CTR patterns are associated with review opportunity in the observed sample; we cannot say that changing a title or snippet will cause a specific future ranking shift.</p>
+      <p>There are also practical limits: the model is trained on a starter slice, not the full warehouse; it is designed for decision support and review triage; and real editorial context is still essential. A low score should not replace human judgment, and a high score should not be treated as a certainty.</p>
+    </section>
+
+    <section class="section">
+      <h2>Ranked recommendations</h2>
+      <ol>
+        <li><strong>Review top-ranked visible low-CTR pages first.</strong> These pages have enough demand to justify a check and the largest observed opportunity gap.</li>
+        <li><strong>Inspect titles and snippets before content rewrites.</strong> This is the most actionable first-pass review when CTR is weak but visibility is healthy.</li>
+        <li><strong>Keep a monitoring list for pages with stable traffic but average performance.</strong> They may not need immediate intervention.</li>
+        <li><strong>Deprioritize low-demand pages.</strong> A page with weak visibility is not a strong review candidate unless the text or context changes materially.</li>
+        <li><strong>Use the model to support judgment, not to replace it.</strong> This is the most responsible operating posture for a ranking model in a public-facing decision pipeline.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2>Reproducibility</h2>
+      <p>This project lives in the repository under the work notebooks and the analysis artifacts. The relevant notebook is the capstone notebook in the work directory, and the model story is grounded in the earlier assignment notebooks and the generated report in the outputs directory.</p>
+      <p>Repository links:</p>
+      <ul>
+        <li><a href="../README.md">Project README</a></li>
+        <li><a href="../work/notebooks/capstone.ipynb">Capstone notebook</a></li>
+        <li><a href="../outputs/model_report.md">Model report</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>Acknowledgments & data credit</h2>
+      <p>Built on the <a href="https://flyrank.ai/" target="_blank" rel="noopener noreferrer">FlyRank ML Internship dataset</a>. The work is a public-safe research summary of a real anonymized search-content dataset and is intended for honest, decision-support analysis.</p>
+    </section>
+  </div>
+</body>
+</html>
