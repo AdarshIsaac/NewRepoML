@@ -6,34 +6,137 @@
   <title>Visible Pages, Weak CTR: A Decision-Support Model for Refresh Review</title>
   <style>
     :root {
-      --bg: #f5f7fb;
+      --bg: #fafbfc;
       --panel: #ffffff;
-      --text: #1d2433;
-      --muted: #576071;
-      --line: #dfe6f1;
-      --accent: #204ecf;
-      --shadow: 0 12px 28px rgba(26, 41, 69, 0.08);
+      --text: #0d1117;
+      --muted: #57606a;
+      --line: #d0d7de;
+      --accent: #0969da;
+      --accent-light: #ddf4ff;
+      --shadow: 0 3px 12px rgba(13, 17, 23, 0.08);
+      --shadow-md: 0 8px 24px rgba(13, 17, 23, 0.12);
     }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 20px 80px; }
-    .hero { background: linear-gradient(135deg, #eef4ff 0%, #f9fbff 100%); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); padding: 36px 28px; margin-bottom: 28px; }
-    h1, h2, h3 { margin-top: 0; }
-    h1 { font-size: clamp(2rem, 2.5vw, 3rem); margin-bottom: 12px; }
-    .subtitle { color: var(--muted); font-size: 1.02rem; margin-bottom: 0; }
-    .meta { color: var(--muted); font-size: 0.95rem; margin-top: 14px; }
-    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px 22px; margin-bottom: 22px; box-shadow: var(--shadow); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-    .kpi { border: 1px solid var(--line); background: #f9fbff; border-radius: 12px; padding: 16px; }
-    .kpi .label { color: var(--muted); font-size: 0.8rem; display: block; text-transform: uppercase; letter-spacing: 0.05em; }
-    .kpi .value { font-size: 2rem; font-weight: 700; margin-top: 8px; color: var(--text); }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-    th { background: #f3f7ff; }
-    .note { background: #f9fafc; border-left: 4px solid var(--accent); padding: 12px 14px; color: var(--text); border-radius: 8px; }
-    a { color: var(--accent); }
-    ul, ol { padding-left: 20px; }
-    @media (max-width: 640px) { .wrap { padding: 18px 14px 60px; } .hero, .section { padding: 20px 16px; } }
+    body { 
+      margin: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 48px 20px 80px; }
+    .hero { 
+      background: linear-gradient(135deg, #ddf4ff 0%, #f0f9ff 100%); 
+      border: 1px solid var(--line); 
+      border-radius: 12px; 
+      box-shadow: var(--shadow-md); 
+      padding: 48px 32px; 
+      margin-bottom: 40px; 
+    }
+    h1, h2, h3 { margin-top: 0; font-weight: 600; }
+    h1 { 
+      font-size: clamp(2rem, 3vw, 2.8rem); 
+      margin-bottom: 16px;
+      line-height: 1.2;
+      color: var(--text);
+    }
+    h2 { 
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent-light);
+    }
+    .subtitle { 
+      color: var(--muted); 
+      font-size: 1.1rem; 
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+    .meta { 
+      color: var(--muted); 
+      font-size: 0.95rem; 
+      margin-top: 16px;
+      font-weight: 500;
+    }
+    .section { 
+      background: var(--panel); 
+      border: 1px solid var(--line); 
+      border-radius: 12px; 
+      padding: 32px; 
+      margin-bottom: 28px; 
+      box-shadow: var(--shadow);
+    }
+    .section p { margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+    .kpi { 
+      border: 1px solid var(--line); 
+      background: var(--accent-light); 
+      border-radius: 8px; 
+      padding: 20px;
+      text-align: center;
+      transition: box-shadow 0.2s ease;
+    }
+    .kpi:hover { box-shadow: var(--shadow-md); }
+    .kpi .label { 
+      color: var(--muted); 
+      font-size: 0.75rem; 
+      display: block; 
+      text-transform: uppercase; 
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+    .kpi .value { 
+      font-size: 2.2rem; 
+      font-weight: 700; 
+      margin-top: 12px; 
+      color: var(--accent);
+    }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin: 24px 0;
+      font-size: 0.95rem;
+    }
+    th { 
+      background: var(--accent-light); 
+      font-weight: 600;
+      text-align: left;
+    }
+    th, td { 
+      padding: 14px 16px; 
+      border-bottom: 1px solid var(--line); 
+      vertical-align: top;
+    }
+    tbody tr:hover { background: #f6f8fb; }
+    .note { 
+      background: var(--accent-light); 
+      border-left: 4px solid var(--accent); 
+      padding: 16px 18px; 
+      color: var(--text); 
+      border-radius: 6px;
+      margin: 20px 0;
+      font-size: 0.95rem;
+    }
+    a { 
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s ease;
+    }
+    a:hover { border-bottom-color: var(--accent); }
+    ul, ol { 
+      padding-left: 24px;
+      line-height: 1.8;
+    }
+    li { margin-bottom: 10px; }
+    strong { font-weight: 600; }
+    @media (max-width: 640px) { 
+      .wrap { padding: 32px 16px 60px; } 
+      .hero, .section { padding: 24px 18px; }
+      h2 { font-size: 1.25rem; }
+    }
   </style>
 </head>
 <body>
