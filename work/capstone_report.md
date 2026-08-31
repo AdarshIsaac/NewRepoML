@@ -1,6 +1,6 @@
 # Visible Pages, Weak CTR: A Decision-Support Model for Refresh Review
 
-- Author: Capstone project
+- Author: Adarsh Isaac
 - Lane: Ranking Signal Analysis
 - Repo: NewRepoML
 - Date: 2026-08-31
